@@ -9,10 +9,14 @@ import mysql.connector
 import pymysql
 from dotenv import load_dotenv
 import os
+from google.oauth2 import service_account
+# import streamlit as st
+
+credentials = service_account.Credentials.from_service_account_info(st.secrets["arjun_gcs_connection"])
 load_dotenv()
 
 # initialize Connector object
-connector = Connector()
+connector = Connector(credentials=credentials)
 
 connection_sql = st.secrets["database"]['connection']
 driver_sql = st.secrets["database"]['driver']
