@@ -7,7 +7,7 @@ import sqlalchemy
 
 import pymysql
 from dotenv import load_dotenv
-import os
+
 from google.oauth2 import service_account
 # import streamlit as st
 
