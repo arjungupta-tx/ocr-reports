@@ -1,6 +1,7 @@
 import base64
-from anthropic import Anthropic
+# from anthropic import Anthropic
 from pathlib import Path
+import anthropic
 
 # MODEL_NAME = "claude-3-opus-20240229"
 
@@ -17,7 +18,7 @@ def get_base64_encoded_image(image_path):
 
 
 def ocr_anthropic(image_strin:base64,api_key,prompt:str,MODEL_NAME:str):
-    client = Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key)
 
     message_list = [
                         {

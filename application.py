@@ -76,7 +76,7 @@ admin_2 = st.Page(os.path.join("streamlit/Admin","User_Registraton.py"), title="
 admin_3 = st.Page(os.path.join("streamlit/Admin","Registered_Users.py"), title="Rgistered User List",icon=":material/person_add:" )
 
 account_pages = [logout_page, settings]
-user_page = [user_2, user_1,user_3]
+user_page = [user_2, user_1]
 
 admin_pages = [admin_1, admin_2]
 
