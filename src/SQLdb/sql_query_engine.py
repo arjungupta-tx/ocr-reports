@@ -4,8 +4,7 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 from google.cloud.sql.connector import Connector
 import sqlalchemy
-from sqlalchemy.engine.base import Engine
-import mysql.connector
+
 import pymysql
 from dotenv import load_dotenv
 import os

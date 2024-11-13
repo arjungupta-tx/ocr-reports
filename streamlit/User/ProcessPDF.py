@@ -3,19 +3,18 @@ from src.SQLdb.sql_query_engine import fetch_all,insert_data,fetch_one
 from src.pipeline.google_storage import upload_file_to_gcs
 import pandas as pd
 
-from src.SQLdb.sql_query_engine import fetch_all,fetch_one
+from src.SQLdb.sql_query_engine import fetch_all,fetch_one,insert_data,execute_update
 from src.Utils.utils import create_folders_users,extract_image,get_all_images_paths_list,count_all_files,delete_existing_files
 from src.Utils.common import encode_image
 from src.pipeline.google_storage import download_file_from_gcs
 from src.pipeline.ocr_api import OCR_API_LIST
 from src.pipeline.llm_api import LLM_API_LIST
-from src.SQLdb.sql_query_engine import insert_data,execute_update
-import time
+
 from datetime import datetime
 import os
 
-import zipfile
-from io import BytesIO
+# import zipfile
+# from io import BytesIO
 
 
 
@@ -29,15 +28,7 @@ st.set_page_config(
     layout="wide",
 )
 
-def color_status(val):
-    color = ''
-    if val == 'Completed':
-        color = 'background-color: green; color: white'
-    elif val == 'In Progress':
-        color = 'background-color: yellow; color: black'
-    elif val == 'Pending':
-        color = 'background-color: grey; color: white'
-    return color
+
 # @st.dialog("Upload Files")
 def file_uploads():
 
@@ -143,7 +134,7 @@ def file_uploads():
                                                         st.session_state.df.at[inx, "Status"] = "In Progress"
                                                         
                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                        st.session_state.table_placeholder.dataframe(st.session_state.df) 
+                                                        st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
 
                                                         delete_existing_files(st.session_state.pdf_file_path)
                                                         delete_existing_files(st.session_state.image_file_path)
@@ -161,7 +152,7 @@ def file_uploads():
                                                                 for k,i in enumerate(st.session_state.list_images):
                                                                     print(k,i)
                                                                     st.session_state.df.at[inx, "Details"] = f"OCR Progress: {k+1}/{st.session_state.page_count}"
-                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df) 
+                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
                                                                    
                                                                     st.session_state.image_base64 = encode_image(i)
                                                                     txt_docai,accuracy_docai, time_docai = st.session_state.ocr_api_list.document_ai_api(image=i)
@@ -209,7 +200,7 @@ def file_uploads():
                                                                 else:
                                                                     st.session_state.df.at[inx, "Status"] = "Completed"
                                                                     # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df)  
+                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)  
                                                                     query_count = f"SELECT count(*) FROM MORdb.Ocr_Page where Id_Pdf = {int(pdf_file_id)};"   
                                                                     count = fetch_one(query_count)     
                                                                     if count[0] == st.session_state.page_count:
@@ -225,13 +216,6 @@ def file_uploads():
                                                     # runsheet genration
 
 
-
-
-                                                 
-
-                              
-              
-
     except Exception as e:
         print(f"error {e}")                
 
@@ -239,15 +223,15 @@ def file_uploads():
 
 
 
-def display_data():
-    user_id = st.session_state.user_id
-    query_data = f""" SELECT  og.Title_Name, pd.Pdf_Name,pd.Total_Pages,pd.IsOcr, pd.Accuracy_Threshold, pd.File_Type, pd.Manual_Review_Page_Numbers, pd.Runsheet_Details FROM Pdf_File_Name as pd  RIGHT JOIN ORG_Title as og ON pd.Id_Org =  og.Id_Org where og.Id_user = {int(user_id)};"""
-    result = fetch_all(query_data)
-    if result:
+# def display_data():
+#     user_id = st.session_state.user_id
+#     query_data = f""" SELECT  og.Title_Name, pd.Pdf_Name,pd.Total_Pages,pd.IsOcr, pd.Accuracy_Threshold, pd.File_Type, pd.Manual_Review_Page_Numbers, pd.Runsheet_Details FROM Pdf_File_Name as pd  RIGHT JOIN ORG_Title as og ON pd.Id_Org =  og.Id_Org where og.Id_user = {int(user_id)};"""
+#     result = fetch_all(query_data)
+#     if result:
 
-        column = ["Project Name","File Name","Total Pages","IsOcr","Accuracy Threshold","File Type","Manual Review Page_Numbers","Runsheet Details"]
-        df =pd.DataFrame(data=result,columns=column)
-        st.dataframe(df,use_container_width=True,selection_mode="single-row",hide_index=True)
+#         column = ["Project Name","File Name","Total Pages","IsOcr","Accuracy Threshold","File Type","Manual Review Page_Numbers","Runsheet Details"]
+#         df =pd.DataFrame(data=result,columns=column)
+#         st.dataframe(df,use_container_width=True,selection_mode="single-row",hide_index=True)
 
 
 # st.session_state.id_org = None
