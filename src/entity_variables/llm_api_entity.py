@@ -15,7 +15,7 @@ class AnthropicKeyVariables:
     
     anthropict_api_key:str = ANTHROPIC_API_KEY
     prompt:str = Prompt_txt_ocr
-    anthropic_model:str = "claude-3-5-sonnet-20240620"
+    anthropic_model:str = "claude-3-5-sonnet-20241022"
 
 
 
