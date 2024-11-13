@@ -7,12 +7,7 @@ from datetime import datetime
 
 st.set_page_config(
     page_title="Project",
-    layout="wide",
-    menu_items={
-              'Get Help': 'https://www.extremelycoolapp.com/help',
-              'Report a bug': "https://www.extremelycoolapp.com/bug",
-            'About': "# This is a header. This is an *extremely* cool app!"
-})
+    layout="wide", )
 
 @st.dialog("Create Project")
 def Project_Title():
@@ -46,9 +41,9 @@ def Project_Title():
                     if Bucke_folder_path is not None:
 
 
-                        query = f""" INSERT INTO ORG_Title(Title_Name, Description, Org_File_Path, Id_user,date,time)
+                        query = f""" INSERT INTO ORG_Title(Title_Name, Description, Org_File_Path, Id_user,date,time,status)
 
-                                    VALUES('{str(project_name)}', '{str(project_description)}', '{str(Bucke_folder_path)}', {int(user_id)}, '{str(datetime.now().strftime('%Y-%m-%d'))}', '{str(datetime.now().strftime('%H:%M:%S'))}')
+                                    VALUES('{str(project_name)}', '{str(project_description)}', '{str(Bucke_folder_path)}', {int(user_id)}, '{str(datetime.now().strftime('%Y-%m-%d'))}', '{str(datetime.now().strftime('%H:%M:%S'))}','{str("Project Created")}');
 
                                 """
                         
@@ -72,8 +67,8 @@ def Project_Title():
 def display_projects():
     st.write("Project Details")
     user_id = st.session_state.user_id
-    columns = ["Project Name", "Description", "Date", "Time"]
-    query = f"SELECT Title_Name, Description, date, time  FROM MORdb.ORG_Title where Id_user = {int(user_id)};"
+    columns = ["Project Name", "Description", "Date", "Time","Status"]
+    query = f"SELECT Title_Name, Description, date, time,status  FROM MORdb.ORG_Title where Id_user = {int(user_id)};"
     result = fetch_all(query)
     if result:
         df = pd.DataFrame(data=result,columns=columns)
