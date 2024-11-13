@@ -162,7 +162,7 @@ def file_uploads():
                                                                 print(k,i)
                                                                 st.session_state.df.at[inx, "Details"] = f"OCR Progress: {k+1}/{st.session_state.page_count}"
                                                                 st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                                st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
+                                                                st.session_state.table_placeholder.dataframe(st.session_state.df_style,use_container_width=True) 
                                                                 
                                                                 image_base64 = encode_image(i)
                                                                 txt_docai,accuracy_docai, time_docai = st.session_state.ocr_api_list.document_ai_api(image=i)
