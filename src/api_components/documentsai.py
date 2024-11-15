@@ -57,13 +57,13 @@ def ocr_doc(FILE_PATH:Path):
         result = docai_client.process_document(request=request)
 
         document_object = result.document
-        lines = document_object.text.split('\n')
-        if lines[0].strip().isdigit():
-            lines = lines[1:]  
-        txt = '\n'.join(lines)
+        # lines = document_object.text.split('\n')
+        # if lines[0].strip().isdigit():
+        #     lines = lines[1:]  
+        # txt = '\n'.join(lines)
         accuracy= (result.document.pages[0].layout.confidence)*100
         # return remove_first_line_if_number(document_object.text), accuracy
-        return txt, accuracy
+        return document_object.text, accuracy
         # print("Document processing complete.")
         # print(f"Text: {document_object.text}")
                 

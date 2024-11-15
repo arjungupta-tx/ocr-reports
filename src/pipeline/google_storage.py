@@ -124,3 +124,37 @@ def download_file_from_gcs(user_name,project_name,destination_file_name,local_fi
 
 
 
+
+def upload_text_to_gcs(project_name, text_content, destination_blob_name):
+    """
+    Uploads a text file to the specified Google Cloud Storage bucket.
+    
+    Parameters:
+    - bucket_name (str): The name of your GCS bucket.
+    - text_content (str): The OCR-extracted text content to upload.
+    - destination_blob_name (str): The name of the file in the bucket (e.g., 'foldername/file.txt').
+
+    """
+    bucket_name = "alok-ocr"
+    folder_name_text = "text_folder"
+    client = storage.Client(project="my-project-6750-ai-2024",credentials=credentials)
+    bucket = client.get_bucket(bucket_name)
+    
+    # Create a blob in the bucket
+    blob = bucket.blob(destination_blob_name)
+    
+    # Upload the text content
+    blob.upload_from_string(text_content, content_type="text/plain")
+    
+    print(f"Text file uploaded to {destination_blob_name} in bucket {bucket_name}")
+
+# Usage
+bucket_name = "your-bucket-name"  # Replace with your actual bucket name
+text_content = "Extracted OCR text here..."  # Replace with the actual OCR text
+destination_blob_name = "your-folder/file.txt"  # Replace with the desired file path in GCS
+
+upload_text_to_gcs(bucket_name, text_content, destination_blob_name)
+
+
+
+

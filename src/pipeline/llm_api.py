@@ -1,4 +1,4 @@
-from src.api_components.openai import merge_documents_with_openai
+from src.api_components.openai import merge_documents_with_openai,runsheet_generation
 from src.entity_variables.llm_api_entity import OpenaiKeyVariables
 from src.entity_variables.promt import prompt_for_merge_document
 import time
@@ -33,4 +33,14 @@ class LLM_API_LIST:
 
         total_time_comperision = f"{minutes} min {seconds:.2f} sec" if minutes > 0 else f"{seconds:.2f} seconds"
 
-        return txt_merge, tokensopenai,total_time_comperision                          
+        return txt_merge, tokensopenai,total_time_comperision    
+
+
+
+
+    def runsheet(self,doc):
+
+        resut,token = runsheet_generation(doc=doc,openai_key=self._OpenaiKeyVariables.openai_api_key)
+
+        return resut,token
+

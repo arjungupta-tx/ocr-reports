@@ -2,7 +2,7 @@ import streamlit as st
 from src.SQLdb.sql_query_engine import fetch_all,insert_data,fetch_one
 from src.pipeline.google_storage import upload_file_to_gcs
 import pandas as pd
-
+from concurrent.futures import ThreadPoolExecutor
 from src.SQLdb.sql_query_engine import fetch_all,fetch_one,insert_data,execute_update
 from src.Utils.utils import create_folders_users,extract_image,get_all_images_paths_list,count_all_files,delete_existing_files
 from src.Utils.common import encode_image
@@ -151,8 +151,8 @@ def file_uploads():
                                                         # st.session_state.df.at[inx, "Total Pages"] = st.session_state.page_count
                                                         st.session_state.df.at[inx, "Status"] = "In Progress"
                                                         
-                                                        st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                        st.session_state.table_placeholder.dataframe(st.session_state.df_style,use_container_width=True) 
+                                                        # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
+                                                        st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
 
                                                         delete_existing_files(st.session_state.pdf_file_path)
                                                         delete_existing_files(st.session_state.image_file_path)
@@ -170,8 +170,8 @@ def file_uploads():
                                                                 for k,i in enumerate(st.session_state.list_images):
                                                                     print(k,i)
                                                                     st.session_state.df.at[inx, "Details"] = f"OCR Progress: {k+1}/{st.session_state.page_count}"
-                                                                    st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df_style,use_container_width=True) 
+                                                                    # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
+                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
                                                                     
                                                                     image_base64 = encode_image(i)
                                                                     txt_docai,accuracy_docai, time_docai = st.session_state.ocr_api_list.document_ai_api(image=i)
@@ -218,8 +218,8 @@ def file_uploads():
                                                                         st.error(result)  
                                                                 else:
                                                                     st.session_state.df.at[inx, "Status"] = "Completed"
-                                                                    st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df_style,use_container_width=True)  
+                                                                    # st.session_state.df_style=st.session_state.df.style.map_index(color_status, subset=['Status'])
+                                                                    st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)  
                                                                     query_count = f"SELECT count(*) FROM MORdb.Ocr_Page where Id_Pdf = {int(pdf_file_id)};"   
                                                                     count = fetch_one(query_count)     
                                                                     if count[0] == st.session_state.page_count:
@@ -292,10 +292,14 @@ def file_uploads():
 
 
 
-
+# if st.button("Start Processing"):
+#     with ThreadPoolExecutor() as executor:
+#         executor.submit(file_uploads)
 
 
 with st.container():
+    # with ThreadPoolExecutor() as executor:
+    #     executor.shutdown(file_uploads)
 
     file_uploads()
      
