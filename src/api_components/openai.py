@@ -108,7 +108,7 @@ def runsheet_generation(doc,openai_key):
 
     user_propmt =f""" 
 
-Extract the following information from the provided legal land document and return it in JSON format:
+Extract the following information from the provided legal land document {doc} and return it in JSON format:
 
 Instrument Type: Type of document or transaction (e.g., deed, mortgage). If no specific type is listed, provide a brief description.
 Grantor: Name(s) of the person or entity transferring rights. If the document is a probate, will, last will and testament, or death certificate, list who died. If it is a court case, provide the name of the court. If the document is a ratification or affidavit, identify who requested the ratification or affidavit.
@@ -121,12 +121,12 @@ Legal Description: Description of the property being transferred, often listed i
 Transferred Interests: Specify the real estate interests being transferred, such as mineral rights, royalty interests, production rights, lease rights, surface rights, or other specified interests. If all rights are being transferred, indicate "All rights, title, and interest."
 Reserved Rights: List any rights explicitly retained or reserved by the grantor, such as overriding royalty interests, rights to minerals at certain depths, or similar retained interests.
 Conditional Rights: Identify any conditional rights, options, or triggering circumstances that apply to the transfer, such as rights held by production for a certain timeframe or rights that require specific conditions to be effective.
-Rights:What is the legal description of the land holding the rights being transfered in the agreement? This is often written as a Parcels, Lots, Blocks, or as a metes and bounds description. If the agreement does not transfer any rights to real estate, return "NA".
-Remarks: Any additional notes or comments.
+Rights:What are the real estate interests in the land described in the legal description that are being tranfered in this agreement? Often the transfered interests involve mineral rights, mineral rights to certain depths, royalty interests, working interests, production rights, lease rights, surface rights, right of ingress, right of egress, or other similar interests., return "NA".
+Remarks: Any additional notes or comments that would be helpful to a Landman researching the chain of title for mineral or leasehold rights of this property in Texas.
 
-Use this list legal land document {doc}
+Use this list legal land document 
 
-Make sure out respone must be in json formate
+Make sure your response must be in json format
 
 
 """
