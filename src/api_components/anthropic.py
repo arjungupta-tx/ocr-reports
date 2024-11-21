@@ -2,6 +2,7 @@ import base64
 # from anthropic import Anthropic
 from pathlib import Path
 import anthropic
+from src.loging import logger
 
 # MODEL_NAME = "claude-3-opus-20240229"
 
@@ -20,25 +21,32 @@ def get_base64_encoded_image(image_path):
 def ocr_anthropic(image_strin:base64,api_key,prompt:str,MODEL_NAME:str):
     client = anthropic.Anthropic(api_key=api_key)
 
-    message_list = [
-                        {
-                            "role": 'user',
-                            "content": [
-                                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_strin}},
-                                {"type": "text", "text": prompt}
-                                #"Transcribe this text. Only output the text and nothing else."
-                            ]
-                        }
-                    ]
+    try:
 
-    response = client.messages.create(
-        model=MODEL_NAME,
-        max_tokens=4000,
-        messages=message_list
-    )
+        message_list = [
+                            {
+                                "role": 'user',
+                                "content": [
+                                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_strin}},
+                                    {"type": "text", "text": prompt}
+                                    #"Transcribe this text. Only output the text and nothing else."
+                                ]
+                            }
+                        ]
+
+        response = client.messages.create(
+            model=MODEL_NAME,
+            max_tokens=4000,
+            messages=message_list
+        )
+        
+        total_tokens = response.usage.input_tokens + response.usage.output_tokens
+        return response.content[0].text , total_tokens
     
-    total_tokens = response.usage.input_tokens + response.usage.output_tokens
-    return response.content[0].text , total_tokens
+
+    except Exception as e:
+        print(f"Error in ocr_anthropic funcion and error is {e}")
+        logger.error(f"Error in ocr_anthropic funcion and error is {e}")
    
 
 

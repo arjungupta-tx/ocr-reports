@@ -17,6 +17,6 @@ def userloging(username:str,password:str):
         return result
 
     except Exception as e:  
-        raise e  
+        print(f"error {e}")  
         
 

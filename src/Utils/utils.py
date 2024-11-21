@@ -8,7 +8,8 @@ import streamlit as st
 import os
 import zipfile
 import io
-
+import pandas as pd
+from docx import Document
 
 
 
@@ -75,7 +76,91 @@ def create_folders_users(pdf_process_dir= "pdf_process_dir",
         return parent_dir, pdf_folder_dir, image_dir,txt_dir,retrieve_image
     except Exception as e:
         raise e    
+    
+def artifactsfolder(artifacts_dir = "artifacts", 
+                    project_dir="project", 
+                    ocrfile_dir ="ocrfile_dir",
+                    runsheet_dir ="runsheet_dir"):
+    try:
 
+        artifacts_path = Path(artifacts_dir)
+        
+        project_path = artifacts_path / project_dir
+        ocrfile_path = project_path / ocrfile_dir
+        runsheet_path = project_path / runsheet_dir
+
+        project_path.mkdir(parents=True,exist_ok=True)
+        ocrfile_path.mkdir(parents=True,exist_ok=True)
+        runsheet_path.mkdir(parents=True,exist_ok=True)
+
+        return project_path,ocrfile_path,runsheet_path
+    except Exception as e:
+        raise e
+    
+import json
+# Function to append JSON data to an Excel sheet
+def append_to_excel(json_data, excel_file, sheet_name="Sheet1"):
+    # Convert JSON to DataFrame
+
+    try:
+
+        if isinstance(json_data, str):
+           json_data = json.loads(json_data)
+        print(f"json data in append function {json_data}")
+        new_data = pd.json_normalize(json_data)
+        print(f"Normalized json data {new_data}")
+        
+        if os.path.exists(excel_file):
+            # Read existing data
+            with pd.ExcelFile(excel_file) as xls:
+                # Check if sheet exists
+                if sheet_name in xls.sheet_names:
+                    existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
+                    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+                else:
+                    # If the sheet doesn't exist, create it with the new data
+                    updated_data = new_data
+            # existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
+            # # Concatenate existing data with new data
+            # updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+        else:
+            # If file doesn't exist, create new DataFrame
+            updated_data = new_data
+
+        # Save updated data to Excel
+        updated_data.to_excel(excel_file, sheet_name=sheet_name,index=False)
+        print(f"Data appended to {excel_file}")
+
+    except Exception as e:
+        raise e    
+
+
+
+
+def save_text_to_docx(text_corpus, output_file):
+    """
+    Saves a list of text elements to a .docx file, with each element on a separate page.
+
+    Parameters:
+        text_corpus (list of str): List of text to save.
+        output_file (str): Path to the output .docx file.
+    """
+    # Create a new Document
+    try:
+
+        doc = Document()
+
+        # Add each text element to a new page
+        for text in text_corpus:
+            doc.add_paragraph(text)  # Add text to the page
+            doc.add_page_break()    # Add a page break after each entry
+
+        # Save the document
+        doc.save(output_file)
+        print(f"Document saved as {output_file}")
+
+    except Exception as e:
+        raise e    
 
 
 def extract_image(pdf_path,image_dir):

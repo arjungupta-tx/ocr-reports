@@ -7,6 +7,7 @@ from google.oauth2 import service_account
 from pathlib import Path
 import os
 import streamlit as st
+from src.loging import logger
 
 
 
@@ -69,7 +70,8 @@ def ocr_doc(FILE_PATH:Path):
                 
        
     except Exception as e:
-       raise e
+       print(f"Error in ocr)doc function and error is {e}")
+       logger.error(f"Error in ocr)doc function and error is {e}")
        
 
 

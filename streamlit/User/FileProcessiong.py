@@ -82,6 +82,7 @@ def pdf_processing():
                                             status_text =f"OCR Processing...... {k + 1}/{st.session_state.page_count}"
                                             progress_bar.progress(int(((k + 1)/(st.session_state.page_count))*100),text=status_text)
                                             # promt_txt=Prompt_txt_ocr
+                                            #{str(txt_comperision).replace("'", "''")}
                                             
                                             st.session_state.image_base64 = encode_image(i)
                                             txt_docai,accuracy_docai, time_docai = st.session_state.ocr_api_list.document_ai_api(image=i)
@@ -100,10 +101,10 @@ def pdf_processing():
                                                                     Txt_Update_Status, Date
                                                                 ) VALUES (
                                                                     {int(accuracy_docai)}, 
-                                                                    '{str(txt_docai).replace("'", "''")}', 
-                                                                    '{str(txt_aponai).replace("'", "''")}', 
-                                                                    '{str(txt_anthropic).replace("'", "''")}', 
-                                                                    '{str(txt_comperision).replace("'", "''")}', 
+                                                                    '{str("")}', 
+                                                                    '{str("")}', 
+                                                                    '{str("")}', 
+                                                                    '{str("")}', 
                                                                     '{str(time_docai)}', 
                                                                     '{str(time_openai)}', 
                                                                     '{str(time_anthropic)}', 
@@ -125,13 +126,14 @@ def pdf_processing():
                                             if result.get("rows_affected",0) > 0:
                                                 with st.container(border=True):
                                                     
-                                                    st.success(f"Accuracy for page number {k+1} is {accuracy_docai:.2f} %",icon=":material/thumb_up:")
-                                                    st.write(f"Time elapsed by Document AI is: {time_docai} || Total token used: ....")
-                                                    st.write(f"Time elapsed by OpenAI is: {time_openai} || Total token used: {toketopenai}")
-                                                    st.write(f"Time elapsed by Anthopic is: {time_anthropic} || Total token used: {token_anthropic}")
-                                                    st.write(f"Time elapsed in Comparision is: {time_coperision} || Total token used: {openai_token_compare}")
+                                                    # st.success(f"Accuracy for page number {k+1} is {accuracy_docai:.2f} %",icon=":material/thumb_up:")
+                                                    # st.write(f"Time elapsed by Document AI is: {time_docai} || Total token used: ....")
+                                                    # st.write(f"Time elapsed by OpenAI is: {time_openai} || Total token used: {toketopenai}")
+                                                    # st.write(f"Time elapsed by Anthopic is: {time_anthropic} || Total token used: {token_anthropic}")
+                                                    # st.write(f"Time elapsed in Comparision is: {time_coperision} || Total token used: {openai_token_compare}")
 
                                                     #   st.info("File Data saved successfully")
+                                                    pass
                                             else:
                                                 st.error(result)    
 
@@ -140,6 +142,7 @@ def pdf_processing():
                                         if count[0] == st.session_state.page_count:
                                             query_update = f""" UPDATE Pdf_File_Name SET Total_Pages = {int(st.session_state.page_count)}, IsOcr = {int(1)} WHERE Id_Pdf = {int(pdf_id)} ;"""
                                             execute_update(query_update)
+                                            rst ,tt= st.session_state.comperision_ai.runsheet(list_ocr_text)
                                             query_zip = f"""SELECT Ocr_Comparable FROM MORdb.Ocr_Page WHERE Id_Pdf = {int(pdf_id)};"""
                                             result_retrieve=fetch_all(query_zip)
                                             if result_retrieve:

@@ -1,6 +1,7 @@
 from google.cloud import storage
 from google.oauth2 import service_account
 import streamlit as st
+from src.loging import logger
 
 credentials = service_account.Credentials.from_service_account_info(st.secrets["arjun_gcs_connection"])
 
@@ -35,6 +36,7 @@ def create_bucket_and_folder(project_name:str,usernmae ,folder_name_pdf,folder_n
     
     except Exception as e:
         print(e)
+        logger.error(f"error in create_bucket_and_folder function and error is {e}")
         return None
     
 
@@ -84,6 +86,7 @@ def upload_file_to_gcs(project_name, user_name, file, destination_filename):
 
     except Exception as e:
         print(f"Error: {e}")
+        logger.error(f"error in upload_file_to_gcs function and error is {e}")
         return None
 
 
@@ -111,6 +114,7 @@ def download_file_from_gcs(user_name,project_name,destination_file_name,local_fi
     
     except Exception as e:
         print(f"Error: {e}")
+        logger.error(f"error in download_file_from_gcs function and error is {e}")
         return None
 
 
