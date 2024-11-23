@@ -142,7 +142,7 @@ def pdf_processing():
                                         if count[0] == st.session_state.page_count:
                                             query_update = f""" UPDATE Pdf_File_Name SET Total_Pages = {int(st.session_state.page_count)}, IsOcr = {int(1)} WHERE Id_Pdf = {int(pdf_id)} ;"""
                                             execute_update(query_update)
-                                            rst ,tt= st.session_state.comperision_ai.runsheet(list_ocr_text)
+                                            # rst ,tt= st.session_state.comperision_ai.runsheet(list_ocr_text)
                                             query_zip = f"""SELECT Ocr_Comparable FROM MORdb.Ocr_Page WHERE Id_Pdf = {int(pdf_id)};"""
                                             result_retrieve=fetch_all(query_zip)
                                             if result_retrieve:

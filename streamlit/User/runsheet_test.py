@@ -138,6 +138,8 @@ def file_uploads():
                                                     # st.session_state.pdf_file_name_list = [element for tuple_item in result2 for element in tuple_item]
                                                     print(f"pdf file list {st.session_state.pdf_file_to_id_map}")
                                                     print(f"pdf file {result2}")
+                                                    logger.info(f"Remaining PDF files {len(st.session_state.pdf_file_to_id_map)}")
+                                                    st.info(f"Remaining PDF files for OCR :{len(st.session_state.pdf_file_to_id_map)}")
                                                     data ={"File Name": list(st.session_state.pdf_file_to_id_map.keys()),
                                                             # "Total Pages":0,
                                                             "Status": ["Pending"] * len(st.session_state.pdf_file_to_id_map),
@@ -210,14 +212,71 @@ def file_uploads():
                                                                     try:    
                                                                       txt_comperision, openai_token_compare, time_coperision = st.session_state.comperision_ai.merge_with_openai(doc1=txt_docai,doc2=txt_anthropic,doc3=txt_aponai)
                                                                       logger.info("Comperision by Open ai")
+                                                                      list_ocr_text.append(txt_comperision)
 
                                                                     except Exception as e:
                                                                         print(f"Error during ocr comperision and erro is {e}")
                                                                         logger.error(f"Error during ocr comperision and erro is {e}")
                                                                     image_base64 = ""
-                                                                    list_ocr_text.append(txt_comperision)
+                                                                    
+
+                                                                    try:
+                                                                        query_insert = f"""
+                                                                        INSERT INTO Ocr_Page (
+                                                                            Ocr_Accuracy, Ocr_Document_AI, Ocr_Open_AI, Ocr_Anthropic, Ocr_Comparable, 
+                                                                            Total_Time_Document_AI, Total_Time_Open_AI, Total_Time_Anthropic, 
+                                                                            Total_Token_Document_AI, Total_Token_Open_AI, Total_Token_Athropic, 
+                                                                            Total_Price_Document_AI, Total_Price_Open_AI, Total_Price_Anthropic, 
+                                                                            Id_Pdf, Pgae_Number, Total_Token_Comperision_api, Total_Time_Comperision, 
+                                                                            Txt_Update_Status, Date
+                                                                        ) VALUES (
+                                                                            {int(accuracy_docai)}, 
+                                                                            '{str(" ")}', 
+                                                                            '{str(" ")}', 
+                                                                            '{str(" ")}', 
+                                                                            '{str(" ")}', 
+                                                                            '{str(time_docai)}', 
+                                                                            '{str(time_openai)}', 
+                                                                            '{str(time_anthropic)}', 
+                                                                            {int(0)}, 
+                                                                            {int(toketopenai)}, 
+                                                                            {int(token_anthropic)}, 
+                                                                            {float(0.00)}, 
+                                                                            {float(0.00)}, 
+                                                                            {float(0.00)}, 
+                                                                            {int(pdf_file_id)}, 
+                                                                            {int(k + 1)}, 
+                                                                            {int(openai_token_compare)}, 
+                                                                            '{str(time_coperision)}', 
+                                                                            'Row Text', 
+                                                                            '{str(datetime.now().strftime("%Y-%m-%d"))}'
+                                                                        );
+                                                                        """
+                                                                        result = insert_data(query_insert)
+                                                                        if result.get("rows_affected",0) > 0:
+                                                                            logger.info(f"OCR Page {k+1} data seved successfully")
+                                                                            # add progressbar
+                                                                        else:
+                                                                            logger.error(f"Error in saving ocr page data and erro is {e}") 
+
+                                                                    except Exception as e:
+                                                                        logger.error(f"Error in saving ocr page data and erro is {e}")    
                                                                     
                                                                 else:
+
+                                                                    try:
+                                                                        query_count = f"SELECT count(*) FROM MORdb.Ocr_Page where Id_Pdf = {int(pdf_file_id)};"   
+                                                                        count = fetch_one(query_count)     
+                                                                        if count[0] == st.session_state.page_count:
+                                                                            query_update = f""" UPDATE Pdf_File_Name SET Total_Pages = {int(st.session_state.page_count)}, IsOcr = {int(1)} WHERE Id_Pdf = {int(pdf_file_id)} ;"""
+                                                                            execute_update(query_update)
+                                                                            # runsheet genration
+                                                                        else:
+                                                                            print(f"Total number of pages is {st.session_state.page_count} but OCR done only on {count} pages")
+                                                                            # runsheet genration
+
+                                                                    except Exception as e:
+                                                                        logger.error(f"Error in updating Pdf_File_Name table data(Total_Pages,IsOcr) and error is {e}")    
 
                                                                     try:
                                                                         
@@ -232,7 +291,7 @@ def file_uploads():
                                                                         # print(f"runsheet file path {rubsheetfile}")
                                                                         append_to_excel(json_data=rst,excel_file=rubsheetfile)
                                                                         st.session_state.df.at[inx, "Status"] = "Completed"
-                                                                        st.session_state.df.at[inx, "Runsheet"] = "Completed"
+                                                                        st.session_state.df.at[inx, "Runsheet"] = "Created"
                                                                         st.session_state.df.at[inx, "OCR"] = "OCR Completed"
                                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
                                                                         st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)
@@ -266,65 +325,14 @@ def file_uploads():
                                                                     
 
                                                     else:
-                                                        st.session_state.df.at[inx, "Runsheet"] = "Created"
+                                                        st.session_state.df.at[inx, "Runsheet"] = "Completed"
                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                        st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)                 
+                                                        st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
+                                                        passquery_update = f""" UPDATE ORG_Title SET status = '{str("OCR Completed")}' WHERE Id_Org = {int(st.session_state.Id_org)} ;"""
+                                                        execute_update(passquery_update)                
                                                                     
-                                                    #                 query_insert = f"""
-                                                    #                                     INSERT INTO Ocr_Page (
-                                                    #                                         Ocr_Accuracy, Ocr_Document_AI, Ocr_Open_AI, Ocr_Anthropic, Ocr_Comparable, 
-                                                    #                                         Total_Time_Document_AI, Total_Time_Open_AI, Total_Time_Anthropic, 
-                                                    #                                         Total_Token_Document_AI, Total_Token_Open_AI, Total_Token_Athropic, 
-                                                    #                                         Total_Price_Document_AI, Total_Price_Open_AI, Total_Price_Anthropic, 
-                                                    #                                         Id_Pdf, Pgae_Number, Total_Token_Comperision_api, Total_Time_Comperision, 
-                                                    #                                         Txt_Update_Status, Date
-                                                    #                                     ) VALUES (
-                                                    #                                         {int(accuracy_docai)}, 
-                                                    #                                         '{str(" ")}', 
-                                                    #                                         '{str(" ")}', 
-                                                    #                                         '{str(" ")}', 
-                                                    #                                         '{str(" ")}', 
-                                                    #                                         '{str(time_docai)}', 
-                                                    #                                         '{str(time_openai)}', 
-                                                    #                                         '{str(time_anthropic)}', 
-                                                    #                                         {int(0)}, 
-                                                    #                                         {int(toketopenai)}, 
-                                                    #                                         {int(token_anthropic)}, 
-                                                    #                                         {float(0.00)}, 
-                                                    #                                         {float(0.00)}, 
-                                                    #                                         {float(0.00)}, 
-                                                    #                                         {int(pdf_file_id)}, 
-                                                    #                                         {int(k + 1)}, 
-                                                    #                                         {int(openai_token_compare)}, 
-                                                    #                                         '{str(time_coperision)}', 
-                                                    #                                         'Row Text', 
-                                                    #                                         '{str(datetime.now().strftime("%Y-%m-%d"))}'
-                                                    #                                     );
-                                                    #                                     """
-                                                    #                 result = insert_data(query_insert)
-                                                    #                 if result.get("rows_affected",0) > 0:
-                                                    #                     pass
-                                                    #                     # add progressbar
-                                                    #                 else:
-                                                    #                     st.error(result)  
-                                                    #             else:
-                                                    #                 st.session_state.df.at[inx, "Status"] = "Completed"
-                                                    #                 # st.session_state.df_style=st.session_state.df.style.map_index(color_status, subset=['Status'])
-                                                    #                 st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)  
-                                                    #                 query_count = f"SELECT count(*) FROM MORdb.Ocr_Page where Id_Pdf = {int(pdf_file_id)};"   
-                                                    #                 count = fetch_one(query_count)     
-                                                    #                 if count[0] == st.session_state.page_count:
-                                                    #                     query_update = f""" UPDATE Pdf_File_Name SET Total_Pages = {int(st.session_state.page_count)}, IsOcr = {int(1)} WHERE Id_Pdf = {int(pdf_file_id)} ;"""
-                                                    #                     execute_update(query_update)
-                                                    #                     # runsheet genration
-                                                    #                 else:
-                                                    #                     print(f"Total number of pages is {st.session_state.page_count} but OCR done only on {count} pages")
-                                                    #                     # runsheet genration
-                                                    # else:
-                                                    #     passquery_update = f""" UPDATE ORG_Title SET status = '{str("OCR Completed")}' WHERE Id_Org = {int(st.session_state.Id_org)} ;"""
-                                                    #     execute_update(passquery_update)
-                                                    #update project status
-                                                    # runsheet genration
+                                                    
+                                                  
 
 
     except Exception as e:
