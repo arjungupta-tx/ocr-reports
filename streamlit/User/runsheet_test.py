@@ -144,7 +144,8 @@ def file_uploads():
                                                             # "Total Pages":0,
                                                             "Status": ["Pending"] * len(st.session_state.pdf_file_to_id_map),
                                                             "OCR": ["--"] * len(st.session_state.pdf_file_to_id_map),
-                                                            "Runsheet": ["--"] * len(st.session_state.pdf_file_to_id_map)
+                                                            "Runsheet": ["--"] * len(st.session_state.pdf_file_to_id_map),
+                                                            "Accuracy(Avg.)": ["--"] * len(st.session_state.pdf_file_to_id_map)
                                                             }
                                                     with st.container(border=True):
                                                         st.session_state.df = pd.DataFrame(data)
@@ -179,6 +180,7 @@ def file_uploads():
                                                                 st.session_state.list_images = get_all_images_paths_list(st.session_state.image_file_path)
                                                                 print(st.session_state.list_images)
                                                                 list_ocr_text= []
+                                                                accuracy_ocr = []
                                                                 for k,i in enumerate(st.session_state.list_images):
                                                                     print(k,i)
                                                                     st.session_state.df.at[inx, "OCR"] = f"OCR Progress: {k+1}/{st.session_state.page_count}"
@@ -188,6 +190,7 @@ def file_uploads():
                                                                     image_base64 = encode_image(i)
                                                                     try:
                                                                       txt_docai,accuracy_docai, time_docai = st.session_state.ocr_api_list.document_ai_api(image=i)
+                                                                      accuracy_ocr.append(accuracy_docai)
                                                                       logger.info("OCR by Docment ai")
                                                                       
                                                                     except Exception as e:
@@ -283,18 +286,25 @@ def file_uploads():
                                                                         rst ,tt= st.session_state.comperision_ai.runsheet(list_ocr_text)
                                                                         # print(type(rst))
                                                                         # print(f"row response json \n {rst}")
-                                                                       
+                                                                        float_values = [float(item) for item in accuracy_ocr]
+                                                                        average = sum(float_values) / len(float_values)
+                                                                        average_rounded = int(average)
                                                                         output_file = "runsheet.xlsx"
                                                                         project,ocrpath,runsheepath = artifactsfolder(project_dir = st.session_state.selected_title)
+                                                                        
                                                                         # print(f"runsheet path {runsheepath}")
                                                                         rubsheetfile = os.path.join(runsheepath,output_file)
                                                                         # print(f"runsheet file path {rubsheetfile}")
-                                                                        append_to_excel(json_data=rst,excel_file=rubsheetfile)
+                                                                        append_to_excel(json_data=rst,excel_file=rubsheetfile,File_Name=f"{pdf_file_name[:-4]}",confidence_level=average_rounded)
+                                                                        
                                                                         st.session_state.df.at[inx, "Status"] = "Completed"
                                                                         st.session_state.df.at[inx, "Runsheet"] = "Created"
                                                                         st.session_state.df.at[inx, "OCR"] = "OCR Completed"
+                                                                        st.session_state.df.at[inx, "Accuracy(Avg.)"] = average_rounded
                                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
                                                                         st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)
+                                                                        accuracy_ocr=[]
+                                                                        average=0
                                                                         logger.info("Runsheet saved")
                                                                        
 
@@ -325,11 +335,12 @@ def file_uploads():
                                                                     
 
                                                     else:
-                                                        st.session_state.df.at[inx, "Runsheet"] = "Completed"
-                                                        # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
-                                                        st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
-                                                        passquery_update = f""" UPDATE ORG_Title SET status = '{str("OCR Completed")}' WHERE Id_Org = {int(st.session_state.Id_org)} ;"""
-                                                        execute_update(passquery_update)                
+                                                        # st.session_state.df.at[inx, "Runsheet"] = "Completed"
+                                                        # # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
+                                                        # st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True) 
+                                                        # passquery_update = f""" UPDATE ORG_Title SET status = '{str("OCR Completed")}' WHERE Id_Org = {int(st.session_state.Id_org)} ;"""
+                                                        # execute_update(passquery_update)   
+                                                        pass             
                                                                     
                                                     
                                                   

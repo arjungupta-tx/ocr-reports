@@ -67,6 +67,7 @@ Project = st.Page(os.path.join("streamlit/User","Project.py"), title="Project", 
 File_processing = st.Page(os.path.join("streamlit/User","FileProcessiong.py"),title="File Processing", icon=":material/handyman:")
 upload_pdf_files = st.Page(os.path.join("streamlit/User","uploadPdfFile.py"),title="Upload files", icon=":material/handyman:")
 runsheet_file = st.Page(os.path.join("streamlit/User","runsheet_test.py"),title="Runsheet", icon=":material/handyman:")
+Display_Project = st.Page(os.path.join("streamlit/User","OCR_PDF_FILE_DETAILS.py"),title="OCR Details", icon=":material/handyman:")
 
 admin_1 = st.Page(
     os.path.join("streamlit/Admin","Admin_Setting.py"),
@@ -78,7 +79,7 @@ admin_2 = st.Page(os.path.join("streamlit/Admin","User_Registraton.py"), title="
 admin_3 = st.Page(os.path.join("streamlit/Admin","Registered_Users.py"), title="Rgistered User List",icon=":material/person_add:" )
 
 account_pages = [logout_page, settings]
-user_page = [Project,runsheet_file]
+user_page = [Project,runsheet_file,Display_Project]
 
 admin_pages = [admin_1, admin_2]
 

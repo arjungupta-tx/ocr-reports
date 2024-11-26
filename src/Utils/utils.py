@@ -10,6 +10,7 @@ import zipfile
 import io
 import pandas as pd
 from docx import Document
+import json
 
 
 
@@ -97,18 +98,58 @@ def artifactsfolder(artifacts_dir = "artifacts",
     except Exception as e:
         raise e
     
-import json
+
 # Function to append JSON data to an Excel sheet
-def append_to_excel(json_data, excel_file, sheet_name="Sheet1"):
-    # Convert JSON to DataFrame
+# def append_to_excel(json_data, excel_file, sheet_name="Sheet1"):
+#     # Convert JSON to DataFrame
 
+#     try:
+
+#         if isinstance(json_data, str):
+#            json_data = json.loads(json_data)
+#         print(f"json data in append function {json_data}")
+#         new_data = pd.json_normalize(json_data)
+#         print(f"Normalized json data {new_data}")
+        
+#         if os.path.exists(excel_file):
+#             # Read existing data
+#             with pd.ExcelFile(excel_file) as xls:
+#                 # Check if sheet exists
+#                 if sheet_name in xls.sheet_names:
+#                     existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
+#                     updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+#                 else:
+#                     # If the sheet doesn't exist, create it with the new data
+#                     updated_data = new_data
+#             # existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
+#             # # Concatenate existing data with new data
+#             # updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+#         else:
+#             # If file doesn't exist, create new DataFrame
+#             updated_data = new_data
+
+#         # Save updated data to Excel
+#         updated_data.to_excel(excel_file, sheet_name=sheet_name,index=False)
+#         print(f"Data appended to {excel_file}")
+
+#     except Exception as e:
+#         raise e    
+    
+
+
+def append_to_excel(json_data, excel_file, sheet_name="Sheet1", File_Name="None", confidence_level="None"):
     try:
-
+        # Convert JSON to DataFrame
         if isinstance(json_data, str):
-           json_data = json.loads(json_data)
-        print(f"json data in append function {json_data}")
+            json_data = json.loads(json_data)
+        print(f"JSON data in append function: {json_data}")
         new_data = pd.json_normalize(json_data)
-        print(f"Normalized json data {new_data}")
+        print(f"Normalized JSON data: {new_data}")
+        
+        # Add two new columns
+        new_data['File_Name'] = File_Name  # Example: Set a default value for NewColumn1
+        new_data['confidence_level'] = confidence_level  # Example: Set a default value for NewColumn2
+        new_data = new_data[['File_Name', 'confidence_level'] + [col for col in new_data.columns if col not in ['File_Name', 'confidence_level']]]
         
         if os.path.exists(excel_file):
             # Read existing data
@@ -116,23 +157,30 @@ def append_to_excel(json_data, excel_file, sheet_name="Sheet1"):
                 # Check if sheet exists
                 if sheet_name in xls.sheet_names:
                     existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
+                    
+                    # Align new columns with existing data
+                    if not {'File_Name', 'confidence_level'}.issubset(existing_data.columns):
+                        existing_data['File_Name'] = None
+                        existing_data['confidence_level'] = None
+                    existing_data = existing_data[['File_Name', 'confidence_level'] + [col for col in existing_data.columns if col not in ['File_Name', 'confidence_level']]]    
+                    
+                    # Concatenate existing data with new data
                     updated_data = pd.concat([existing_data, new_data], ignore_index=True)
                 else:
                     # If the sheet doesn't exist, create it with the new data
                     updated_data = new_data
-            # existing_data = pd.read_excel(excel_file, sheet_name=sheet_name)
-            # # Concatenate existing data with new data
-            # updated_data = pd.concat([existing_data, new_data], ignore_index=True)
         else:
             # If file doesn't exist, create new DataFrame
             updated_data = new_data
 
         # Save updated data to Excel
-        updated_data.to_excel(excel_file, sheet_name=sheet_name,index=False)
+        updated_data.to_excel(excel_file, sheet_name=sheet_name, index=False)
         print(f"Data appended to {excel_file}")
 
     except Exception as e:
-        raise e    
+        print(f"Error: {e}")
+        raise e
+
 
 
 
