@@ -3,7 +3,10 @@ from src.SQLdb.sql_query_engine import fetch_all,insert_data,fetch_one
 from src.loging import logger
 import pandas as pd
 
-
+st.set_page_config(
+    page_title="Project",
+    layout="wide",
+)
 
 
 def display_project(org_id):
@@ -18,6 +21,7 @@ def display_project(org_id):
         y = dict(zip(df["File Name"], df["PDF ID"]))
         
         st.dataframe(X,use_container_width=True,selection_mode="single-row",hide_index=True)
+        # st.bokeh_chart(data = X, x="File Name", y="Total Pages", x_label="Page Name",y_label="Total Pages",use_container_width=True,height=500,color="IsOcr")
         return y
 
 
@@ -30,14 +34,17 @@ def ocr_page_display(pdf_file):
         st.info("Please select pdf")
     else:
         pdf_id = pdf_file[select_pdf]
-        st.info(pdf_id)
+        # st.info(pdf_id)
         
         query1 = f"SELECT Ocr_Accuracy,Pgae_Number FROM MORdb.Ocr_Page WHERE Id_Pdf = {int(pdf_id)}"
         result_select = fetch_all(query1)
         if result_select:
-            column = ["Accuracy", "Page Number"]
+            column = ["Confidence_level", "Page Number"]
             df1 = pd.DataFrame(data=result_select,columns=column)
             st.dataframe(df1[df1.columns[::-1]],use_container_width=True,selection_mode="single-row",hide_index=True)
+            with st.container(border=True):
+              st.subheader("Graph",divider=True)  
+            #   st.bar_chart(df1,x="Page Number",y="Confidence_level",x_label="Page Number",y_label="Confidence_level",use_container_width=True)
 
 
 

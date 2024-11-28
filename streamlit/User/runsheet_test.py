@@ -145,7 +145,7 @@ def file_uploads():
                                                             "Status": ["Pending"] * len(st.session_state.pdf_file_to_id_map),
                                                             "OCR": ["--"] * len(st.session_state.pdf_file_to_id_map),
                                                             "Runsheet": ["--"] * len(st.session_state.pdf_file_to_id_map),
-                                                            "Accuracy(Avg.)": ["--"] * len(st.session_state.pdf_file_to_id_map)
+                                                            "Confidence_level(Avg.)": ["--"] * len(st.session_state.pdf_file_to_id_map)
                                                             }
                                                     with st.container(border=True):
                                                         st.session_state.df = pd.DataFrame(data)
@@ -266,6 +266,7 @@ def file_uploads():
                                                                         logger.error(f"Error in saving ocr page data and erro is {e}")    
                                                                     
                                                                 else:
+                                                                    project,ocrpath,runsheepath = artifactsfolder(project_dir = st.session_state.selected_title)
 
                                                                     try:
                                                                         query_count = f"SELECT count(*) FROM MORdb.Ocr_Page where Id_Pdf = {int(pdf_file_id)};"   
@@ -284,23 +285,33 @@ def file_uploads():
                                                                     try:
                                                                         
                                                                         rst ,tt= st.session_state.comperision_ai.runsheet(list_ocr_text)
+                                                                        json_data = json.loads(rst)
+                                                                        runsheet =json_data['runsheet']
+                                                                        Stub =json_data["Stub Documents"]
+
+                                                                        runsheetd = pd.json_normalize(runsheet)
+                                                                        stubd = pd.json_normalize(Stub)
+
+                                                                        # print(rst)
+
                                                                         # print(type(rst))
                                                                         # print(f"row response json \n {rst}")
                                                                         float_values = [float(item) for item in accuracy_ocr]
                                                                         average = sum(float_values) / len(float_values)
                                                                         average_rounded = int(average)
                                                                         output_file = "runsheet.xlsx"
-                                                                        project,ocrpath,runsheepath = artifactsfolder(project_dir = st.session_state.selected_title)
+                                                                        # project,ocrpath,runsheepath = artifactsfolder(project_dir = st.session_state.selected_title)
                                                                         
                                                                         # print(f"runsheet path {runsheepath}")
                                                                         rubsheetfile = os.path.join(runsheepath,output_file)
                                                                         # print(f"runsheet file path {rubsheetfile}")
-                                                                        append_to_excel(json_data=rst,excel_file=rubsheetfile,File_Name=f"{pdf_file_name[:-4]}",confidence_level=average_rounded)
+                                                                        append_to_excel(json_data=runsheetd,excel_file=rubsheetfile,sheet_name="Runsheet",File_Name=f"{pdf_file_name[:-4]}",confidence_level=average_rounded)
+                                                                        append_to_excel(json_data=stubd,excel_file=rubsheetfile,sheet_name="Stub Documents",File_Name=f"{pdf_file_name[:-4]}",confidence_level=average_rounded)
                                                                         
                                                                         st.session_state.df.at[inx, "Status"] = "Completed"
                                                                         st.session_state.df.at[inx, "Runsheet"] = "Created"
                                                                         st.session_state.df.at[inx, "OCR"] = "OCR Completed"
-                                                                        st.session_state.df.at[inx, "Accuracy(Avg.)"] = average_rounded
+                                                                        st.session_state.df.at[inx, "Confidence_level(Avg.)"] = average_rounded
                                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
                                                                         st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)
                                                                         accuracy_ocr=[]
@@ -317,7 +328,7 @@ def file_uploads():
                                                                         
                                                                         # st.session_state.df_style=st.session_state.df.style.applymap(color_status, subset=['Status'])
                                                                         st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)
-                                                                        list_ocr_text= []
+                                                                        # list_ocr_text= []
 
 
                                                                     try:
