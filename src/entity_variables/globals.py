@@ -31,7 +31,7 @@ class Count_Entity:
 
 Prompt_txt_ocr = """ 
 
-Perform OCR on the following document. The document may contain either *handwritten cursive text* or *printed text*. 
+Perform OCR on the following scanned document. The document may contain either *handwritten cursive text* or *printed text*. 
 
 Follow the instructions based on the type of content:  
 
@@ -50,7 +50,8 @@ Follow the instructions based on the type of content:
 
 For both types of content:
  - Return the extracted text only in a structured format, maintaining the original layout and line breaks where applicable.  
-- Do not give page number. 
+- Do not give page number which is above the document page. 
+- Please check if there left or right margine line only present in scaaned documents and text content out of margine so include that text and content also.
 - Return Text only nothing else.
 
 """

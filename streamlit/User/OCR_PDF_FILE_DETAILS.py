@@ -44,7 +44,7 @@ def ocr_page_display(pdf_file):
             st.dataframe(df1[df1.columns[::-1]],use_container_width=True,selection_mode="single-row",hide_index=True)
             with st.container(border=True):
               st.subheader("Graph",divider=True)  
-            #   st.bar_chart(df1,x="Page Number",y="Confidence_level",x_label="Page Number",y_label="Confidence_level",use_container_width=True)
+              st.bar_chart(df1,x="Page Number",y="Confidence_level",x_label="Page Number",y_label="Confidence_level",use_container_width=True)
 
 
 

@@ -36,15 +36,15 @@ st.set_page_config(
     layout="wide",
 )
 
-def color_status(val):
-    color = ''
-    if val == 'Completed':
-        color = 'background-color: green; color: white'
-    elif val == 'In Progress':
-        color = 'background-color: yellow; color: black'
-    elif val == 'Pending':
-        color = 'background-color: grey; color: white'
-    return color
+# def color_status(val):
+#     color = ''
+#     if val == 'Completed':
+#         color = 'background-color: green; color: white'
+#     elif val == 'In Progress':
+#         color = 'background-color: yellow; color: black'
+#     elif val == 'Pending':
+#         color = 'background-color: grey; color: white'
+#     return color
 
 # @st.dialog("Upload Files")
 def file_uploads():
@@ -66,10 +66,10 @@ def file_uploads():
                 else:    
 
 
-                    threshold_accuracy = st.selectbox(label="Select Threshold Accuracy",options=["Select",70,75,80,85,90]) 
-                    if threshold_accuracy == "Select":
-                        st.info("Please select accuracy")
-                    else:    
+                    # threshold_accuracy = st.selectbox(label="Select Threshold Accuracy",options=["Select",70,75,80,85,90]) 
+                    # if threshold_accuracy == "Select":
+                    #     st.info("Please select accuracy")
+                    # else:    
                         uploaded_files = st.file_uploader("Upload a file",type=["pdf"],accept_multiple_files=True)
                         print(f"Total files {len(uploaded_files)} and file is --- {uploaded_files}")
 
@@ -86,7 +86,7 @@ def file_uploads():
                             else:
                                 
                                 if st.session_state.selected_title:
-                                    if threshold_accuracy:
+                                    # if threshold_accuracy:
                                         if len(uploaded_files) > 0:
                                             progress = st.progress(0,text="Uploading Files....")
                                             total_files_to_upload = len(uploaded_files)
@@ -117,7 +117,7 @@ def file_uploads():
                                                         query1 = f""" 
                                                                 INSERT INTO Pdf_File_Name(Pdf_Name,Total_Pages,IsOcr,Accuracy_Threshold,File_Type,Manual_Review_Page_Numbers,File_Path_Server,Id_Org,Runsheet_Details)
 
-                                                                VALUES('{str(uploaded_file.name)}',{int(Total_page)},{int(IOCSR)},{int(threshold_accuracy)},'{str(File_type)}','{str(Manual_review)}','{str(file_pth)}',{int(st.session_state.Id_org)},'{str(runsheet_details)}')
+                                                                VALUES('{str(uploaded_file.name)}',{int(Total_page)},{int(IOCSR)},{int(0)},'{str(File_type)}','{str(Manual_review)}','{str(file_pth)}',{int(st.session_state.Id_org)},'{str(runsheet_details)}')
                                                         
                                                                 """
                                                         
@@ -152,6 +152,7 @@ def file_uploads():
                                                         st.session_state.table_placeholder = st.empty()  # Placeholder for the table
                                                         st.session_state.table_placeholder.dataframe(st.session_state.df,use_container_width=True)
 
+                                                    # list_ocr_text= []
                                                     for inx,(pdf_file_name,pdf_file_id) in enumerate(st.session_state.pdf_file_to_id_map.items()):
                                                         st.session_state.user_file_path, st.session_state.pdf_file_path, st.session_state.image_file_path,st.session_state.txt_file_path,retrieve_mage_file_path = create_folders_users(User_file=st.session_state.user_email)
                                                         print(st.session_state.user_file_path)

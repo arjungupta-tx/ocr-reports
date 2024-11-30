@@ -38,7 +38,7 @@ def openai_ocr(base64_img,api_key,models,prompt):
                     ],
                 }
             ],
-            max_tokens=4000,
+            max_tokens=6000,
         )
 
         txt_respone = response.choices[0].message.content
@@ -226,6 +226,7 @@ def runsheet_generation(doc,openai_key):
             
              substeps: based on Instrument Type excract the following information Recording Information,Recording Date,Execution Date,Effective Date,Grantor(s),Grantee(s),Property Description.Reservations,Conditions
 
+              
         Examples:
                
                 {
@@ -233,7 +234,7 @@ def runsheet_generation(doc,openai_key):
                 "runsheet":
                             {
                         "Instrument Type": "Court Case Judgment",
-                        "Recording Information" : "some thing",
+                        "Recording Information" : "No. 2529, County Court of Matagorda County, Texas",
                         "Recording Date" : "August 30, 1919"
                         "Grantor(s)": "District Court of Liberty County, Texas",
                         "Grantee(s)": "Jennie M. Braggard and A. Braggard",
@@ -251,6 +252,9 @@ def runsheet_generation(doc,openai_key):
                                  "Document": "Stub Documents Details........"
                 
                 }
+
+
+        -Make sure Stubs docments other information of same file should be store in "Stub Documents" in json during return.        
 
                         
 
@@ -278,7 +282,7 @@ def runsheet_generation(doc,openai_key):
 
                 ""If Instrument Type is Deed:""
                         
-                       Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                       Recording Information : Tell me the informaiton that is used by the county to identify and record this document. That information is generally in The form of the county in which the document was recorded for public record, A volume and page number, A recording date, or A recording number and other recording information, Return all of the details about how the county identifies and records this document.
                        Recording Date : What is the date on which the deed was recorded or filed with the county?
                        Execution Date : What is the latest date on which a grantor or grantee signed the document?
                        Effective Date : What is the date of the transfer of ownership?
@@ -290,9 +294,9 @@ def runsheet_generation(doc,openai_key):
 
 
 
-                ""If Instrument Type is Lease:""
+                ""If Instrument Type is Lease:""  
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the lease was recorded or filed with the county?
                     Execution Date : What is the latest date on which a lessor or lessee signed the document?
                     Effective Date : What is the date the lease is effective?
@@ -305,7 +309,7 @@ def runsheet_generation(doc,openai_key):
 
                 ""If Instrument Type is Release:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the release was recorded or filed with the county?
                     Execution Date : What is the latest date on which the release was signed?
                     Effective Date : What is the date that the release went into effect?
@@ -318,7 +322,7 @@ def runsheet_generation(doc,openai_key):
 
                ""If Instrument Type is Waiver:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the release was recorded or filed with the county?
                     Execution Date : What is the latest date on which the release was signed?
                     Effective Date : What is the date that the release went into effect?
@@ -330,7 +334,7 @@ def runsheet_generation(doc,openai_key):
 
                 ""If Instrument Type is Quitclaim:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the quitclaim was recorded or filed with the county?
                     Execution Date : What is the latest date on which the quitclaim was signed?
                     Effective Date : What is the date that the quitclaim went into effect?
@@ -342,7 +346,7 @@ def runsheet_generation(doc,openai_key):
 
                ""If Instrument Type is Option:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the option was recorded or filed with the county?
                     Execution Date : What is the latest date on which the option was signed?
                     Effective Date : What is the date that the option went into effect?
@@ -355,7 +359,7 @@ def runsheet_generation(doc,openai_key):
                
                ""If Instrument Type is Easement or Right of Way:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the easement was recorded or filed with the county?
                     Execution Date : What is the latest date on which the easement was signed?
                     Effective Date : What is the date that the easement went into effect?
@@ -368,7 +372,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Ratification:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the ratification was recorded or filed with the county?
                     Execution Date : What is the latest date on which the ratification was signed?
                     Effective Date : What is the date that the ratification went into effect?
@@ -382,7 +386,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Affidavit:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the affidavit was recorded or filed with the county?
                     Execution Date : What is the latest date on which the affidavit was signed?
                     Effective Date : Return: N/A
@@ -395,7 +399,7 @@ def runsheet_generation(doc,openai_key):
                     
                ""If Instrument Type is Probate:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the probate was recorded or filed with the county?
                     Execution Date : What is the latest date on which the probate document was signed?
                     Effective Date : What is the effective date of the probate document?
@@ -408,7 +412,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Will and Testament:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the will was recorded or filed with the county?
                     Execution Date : What is the latest date on which the will was signed?
                     Effective Date :Return: N/A
@@ -420,7 +424,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Death Certificate:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date of the death certificate?
                     Execution Date : Return: N/A
                     Effective Date :Return: N/A
@@ -432,7 +436,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Obituary:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date of the obituary?
                     Execution Date : Return: N/A
                     Effective Date :Return: N/A
@@ -446,7 +450,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Divorce:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date that the divorce filing was recorded or filed with the county?
                     Execution Date : What is the latest date on which the divorce filing was signed?
                     Effective Date : What is the effective date of the divorce finalization?
@@ -459,7 +463,7 @@ def runsheet_generation(doc,openai_key):
 
                ""If Instrument Type is Adoption:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date the adoption was recorded or filed with the county?
                     Execution Date : What is the latest date that the adoption documents were signed?
                     Effective Date : Return: N/A
@@ -473,7 +477,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Court Case:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date of the court case recording or filing with the county?
                     Execution Date : Return: N/A
                     Effective Date : What is the date that the ruling of the court case goes into effect?
@@ -487,7 +491,7 @@ def runsheet_generation(doc,openai_key):
 
                 ""If Instrument Type is Assignment:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date of the assignment recording or filing with the county?
                     Execution Date : What is the latest date on which party signed the assignment?
                     Effective Date : What is the effective date of the assignment?
@@ -501,7 +505,7 @@ def runsheet_generation(doc,openai_key):
 
               ""If Instrument Type is Other:""
 
-                    Recording Information : Reference the recording information in the document, and.the name of the file, to determine the labels used by the county to file and organize this document (DR, Volume, Page, Number, etc.)?
+                    Recording Information : Extract the information of recorded country,A volume and page number, A recording date, or A recording number and other recording information. Make sure all information must be in one column which is "Recording Information".
                     Recording Date : What is the date on which the document was recorded or filed with the county?
                     Execution Date : What is the latest date on which party signed the document?
                     Effective Date : What is the date the document is effective?

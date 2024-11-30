@@ -11,7 +11,7 @@ import io
 import pandas as pd
 from docx import Document
 import json
-
+from src.loging import logger
 
 
 def create_folders(pdf_process_dir= "pdf_process_dir", 
@@ -225,10 +225,12 @@ def append_to_excel(json_data, excel_file, sheet_name="Sheet1", File_Name="None"
                 new_data.to_excel(writer, sheet_name=sheet_name, index=False)
 
         print(f"Data successfully appended to sheet '{sheet_name}' in {excel_file}")
+        logger.info(f"runsheet name {sheet_name} and data {new_data}")
+        
 
     except Exception as e:
         print(f"Error: {e}")
-        raise e
+        # raise e
 
 
 
@@ -255,7 +257,8 @@ def save_text_to_docx(text_corpus, output_file):
         print(f"Document saved as {output_file}")
 
     except Exception as e:
-        raise e    
+        # raise e    
+        print(e)
 
 
 def extract_image(pdf_path,image_dir):

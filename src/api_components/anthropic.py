@@ -36,7 +36,7 @@ def ocr_anthropic(image_strin:base64,api_key,prompt:str,MODEL_NAME:str):
 
         response = client.messages.create(
             model=MODEL_NAME,
-            max_tokens=4000,
+            max_tokens=6000,
             messages=message_list
         )
         

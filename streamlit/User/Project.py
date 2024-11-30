@@ -68,7 +68,7 @@ def display_projects():
     st.write("Project Details")
     user_id = st.session_state.user_id
     columns = ["Project Name", "Description", "Date", "Time","Status"]
-    query = f"SELECT Title_Name, Description, date, time,status  FROM MORdb.ORG_Title where Id_user = {int(user_id)};"
+    query = f"SELECT Title_Name, Description, date, time,status  FROM MORdb.ORG_Title where Id_user = {int(user_id)} ORDER BY Id_Org DESC;"
     result = fetch_all(query)
     if result:
         df = pd.DataFrame(data=result,columns=columns)
