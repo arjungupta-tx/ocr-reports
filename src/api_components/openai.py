@@ -513,7 +513,8 @@ def runsheet_generation(doc,openai_key):
                     Grantee(s) : Who is receiving property or rights?
                     Property Description : What is the description of the property or rights being transferred?
                     Reservations : Is there any property or rights which are explicitly excluded from the transaction?
-                    Conditions : Are there any conditions that must be met after the effective date to finalize the transfer?      
+                    
+                    Conditions   : Are there any conditions that must be met after the effective date to finalize the transfer?      
 
 
 
@@ -556,6 +557,77 @@ def runsheet_generation(doc,openai_key):
                                                         response_format= { "type": "json_object" },
                                                         temperature=0,
                                                         top_p=1
+                                                    )
+        result = completion.choices[0].message.content
+        total_token = completion.usage.total_tokens
+        return result,total_token
+    
+
+    except Exception as e:
+        print(f" Error in runsheet_generation funtion and error is {e}")
+        # logger.error(f" Error in runsheet_generation funtion and error is {e}")
+
+
+
+
+
+
+
+from openai import OpenAI
+def chain_of_title(doc,openai_key):
+
+    try:
+        System_Prompt = """ 
+
+            You are a helpful AI assistant designed to analyze land records and identify relationships between transactions. You are provided with data from an Excel sheet containing land ownership records with the following columns:
+
+* **Instrument Type:** The type of legal document (e.g., Deed, Mortgage, Release)
+* **Grantor:** The person or entity transferring ownership
+* **Grantee:** The person or entity receiving ownership
+* **Volume/Page:**  Reference for the recorded document
+* **Effective Date:** The date the transfer is legally in effect
+* **Execution Date:** The date the document was signed 
+* **File Date:** The date the document was officially filed
+* **Legal Description:** The legal description of the property
+* **Transferred Interests:**  Specific interests transferred (e.g., Fee Simple, Mineral Rights) 
+* **Reserved Rights:** Rights kept by the Grantor
+* **Conditional Rights:** Rights granted with conditions
+* **Rights:**  General description of rights involved
+* **Remarks:**  Additional notes
+* **Documents:**  Links to document images or PDFs 
+
+Your goal is to help identify chains of title, showing how ownership of land has passed from one party to another over time.
+
+
+
+"""
+        
+
+        user_propmt =f""" 
+        Create Chain of title
+
+Analyze the following data and generate the relationship as specified:
+Relationship must be linked to each other and also display associated data
+And Create Chain of title using {doc}
+
+
+    """
+        
+
+        client = OpenAI(api_key=openai_key)
+
+        completion = client.chat.completions.create(
+                                                        model="gpt-4o",
+                                                        messages=[
+                                                            {"role": "system", "content": System_Prompt},
+                                                            {
+                                                                "role": "user",
+                                                                "content": user_propmt
+                                                            }
+                                                        ],
+                                                        # response_format= { "type": "json_object" },
+                                                        temperature=1,
+                                                        # top_p=1
                                                     )
         result = completion.choices[0].message.content
         total_token = completion.usage.total_tokens
