@@ -21,9 +21,11 @@ def chainoftitle():
         if uploaded_file is not None:
            
            df = pd.read_excel(uploaded_file, engine="openpyxl")
+           print(df)
         #    jsondata = llm_obj.chai_of_title_anthropic(df) 
-           jsondata = llm_obj.chai_of_title(df)
-           st.write(jsondata)
+           jsondata,token_ = llm_obj.chai_of_title(df)
+           st.markdown(jsondata)
+           st.dataframe(df)
         #    st.json(jsondata)
 
         else:

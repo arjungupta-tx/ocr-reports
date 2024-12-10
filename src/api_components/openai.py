@@ -573,42 +573,61 @@ def runsheet_generation(doc,openai_key):
 
 
 
+# 
+
+
+
 from openai import OpenAI
 def chain_of_title(doc,openai_key):
 
     try:
         System_Prompt = """ 
 
-            You are a helpful AI assistant designed to analyze land records and identify relationships between transactions. You are provided with data from an Excel sheet containing land ownership records with the following columns:
+             You are a legal document relationship analyzer. Your task is to analyze structured data about land ownership records and extract meaningful relationships between the parties involved. Specifically, you need to create relationships between "Grantor" and "Grantee" for each record, including the nature of the transaction, the date it was filed, and the legal description.
+For each record:
+- Identify the "Grantor" (the party transferring ownership or rights).
+- Identify the "Grantee" (the party receiving ownership or rights).
+- Include the "File Date" of the transaction.
+- Include any relevant "Instrument Type" and "Legal Description."
+- Try to generate linked Json format.
 
-* **Instrument Type:** The type of legal document (e.g., Deed, Mortgage, Release)
-* **Grantor:** The person or entity transferring ownership
-* **Grantee:** The person or entity receiving ownership
-* **Volume/Page:**  Reference for the recorded document
-* **Effective Date:** The date the transfer is legally in effect
-* **Execution Date:** The date the document was signed 
-* **File Date:** The date the document was officially filed
-* **Legal Description:** The legal description of the property
-* **Transferred Interests:**  Specific interests transferred (e.g., Fee Simple, Mineral Rights) 
-* **Reserved Rights:** Rights kept by the Grantor
-* **Conditional Rights:** Rights granted with conditions
-* **Rights:**  General description of rights involved
-* **Remarks:**  Additional notes
-* **Documents:**  Links to document images or PDFs 
+if Assignemnts - Deed, Lease, Assignment, Option, Quitclaim, Easement:
+        {
+        "Grantor": "Name of the Grantor"
+        "Instrument Type" : [Instrument Type,Execution Date,Effective ,Filed Date,-User Notes-,Transfered Rights]
+        "Grantee": "Name of the Grantee",
+        "Right" : Grantee (Grantor with Retained Rights)
+        }
 
-Your goal is to help identify chains of title, showing how ownership of land has passed from one party to another over time.
+        
 
-
+if Evidence - Probate, Will and Testament, Heirship:
+ {
+        "Grantor": "Name of the Grantor"
+        "Instrument Type" : [Instrument Type,Execution Date,Effective ,Filed Date,-User Notes-,Transfered Rights]
+        "Grantee": ["Name of the Grantee",]
+        "Right" : Grantee (Grantor with Retained Rights),
+        "Death Certificate"   :[Death Certificate Details],
+        "Affidavit of Heirship": [Affidavit of Heirship Details],
+        "Obituary":Obituary Details,
+        "Adoption / Divorce":Adoption / Divorce Details
+        }
 
 """
         
 
         user_propmt =f""" 
-        Create Chain of title
 
 Analyze the following data and generate the relationship as specified:
-Relationship must be linked to each other and also display associated data
-And Create Chain of title using {doc}
+Create chain of title like node and edge.
+Make sure utilised all row of dataframe.
+
+Must include all grantor and grantee name.
+
+
+use this dataframe :{doc}
+
+
 
 
     """
@@ -627,7 +646,7 @@ And Create Chain of title using {doc}
                                                         ],
                                                         # response_format= { "type": "json_object" },
                                                         temperature=1,
-                                                        # top_p=1
+                                                        top_p=1
                                                     )
         result = completion.choices[0].message.content
         total_token = completion.usage.total_tokens
